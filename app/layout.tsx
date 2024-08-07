@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins as FontSans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import { Header } from "@/components/Header";
 import "./globals.css";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
         >
           <Header />
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
