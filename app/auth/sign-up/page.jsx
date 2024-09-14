@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
@@ -9,9 +8,11 @@ import * as Yup from "yup";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import OTPModal from "./OTPModal";
 
 function Auth() {
   const [isChecked, setIsChecked] = useState(false);
+  const [isOTPModalOpen, setOTPModalOpen] = useState(false);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -25,7 +26,7 @@ function Auth() {
     }),
     onSubmit: (values) => {
       if (isChecked) {
-        console.log(values);
+        setOTPModalOpen(true);
       } else {
         toast.error("Please tick the checkbox before logging in.", {
           position: "top-right",
@@ -40,6 +41,32 @@ function Auth() {
       }
     },
   });
+
+  const handleOTPSuccess = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
+
+  const handleOTPError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   return (
     <div className="flex overflow-hidden items-start">
@@ -152,7 +179,12 @@ function Auth() {
             </Button>
           </div>
         </form>
-
+        <OTPModal
+          isOpen={isOTPModalOpen}
+          onClose={() => setOTPModalOpen(false)}
+          onSuccess={handleOTPSuccess}
+          onError={handleOTPError}
+        />
         <div className="w-full flex justify-center items-center max-w-[75vh]">
           <p className="text-sm font-normal text-[#060606] font-inter">
             Already have an account?{" "}
