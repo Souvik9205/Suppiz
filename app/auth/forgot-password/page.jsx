@@ -12,6 +12,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useRouter } from "next/router";
 
 function ForgotPassword() {
   const [step, setStep] = useState(1);
@@ -52,6 +53,8 @@ function ForgotPassword() {
     }),
     onSubmit: (values) => {
       toast.success("Password changed successfully!");
+      const router = useRouter();
+      router.push("/auth/login");
     },
   });
 

@@ -6,6 +6,7 @@ import { FaGithub } from "react-icons/fa";
 import { useFormik } from "formik";
 import { Button } from "@/components/ui/button";
 import * as Yup from "yup";
+import { useRouter } from "next/router";
 
 function Auth() {
   const formik = useFormik({
@@ -20,7 +21,8 @@ function Auth() {
         .required("Required"),
     }),
     onSubmit: (values) => {
-      console.log(values);
+      const router = useRouter();
+      router.push("/home");
     },
   });
 

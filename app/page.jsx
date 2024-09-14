@@ -10,6 +10,9 @@ export default function Home() {
       <button className="p-2 m-5 bg-blue-300 text-lg rounded-md">
         <Link href="/auth/login">LogIn</Link>
       </button>
+      <button className="p-2 m-5 bg-blue-300 text-lg rounded-md">
+        <Link href="/auth/data">Add data</Link>
+      </button>
     </div>
   );
 }

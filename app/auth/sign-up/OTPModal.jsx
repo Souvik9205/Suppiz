@@ -7,6 +7,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 const OTPModal = ({ isOpen, onClose, onSuccess, onError }) => {
   const [value, setValue] = useState("");
@@ -25,6 +26,8 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError }) => {
         onSuccess("OTP verified successfully!");
         resetForm();
         onClose();
+        const router = useRouter();
+        router.push("/home");
       } else {
         onError("Invalid OTP. Please try again.");
         setValue("");
