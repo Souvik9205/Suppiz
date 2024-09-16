@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,6 +28,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const MultiStepForm = () => {
   const [step, setStep] = useState(1);
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(null);
 
   const formikStep1 = useFormik({
@@ -66,7 +67,6 @@ const MultiStepForm = () => {
     }),
     onSubmit: (values) => {
       toast.success("Form submitted successfully!");
-      const router = useRouter();
 
       router.push("/home");
       //   toast.success(

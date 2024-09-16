@@ -6,9 +6,13 @@ import { FaGithub } from "react-icons/fa";
 import { useFormik } from "formik";
 import { Button } from "@/components/ui/button";
 import * as Yup from "yup";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Auth() {
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -20,14 +24,45 @@ function Auth() {
         .min(6, "Must be 6 characters or more")
         .required("Required"),
     }),
-    onSubmit: (values) => {
-      const router = useRouter();
-      router.push("/home");
+    onSubmit: async (values) => {
+      try {
+        const res = await axios.post("http://localhost:8080/api/auth/login", {
+          email: values.email,
+          password: values.password,
+        });
+        if (res.status === 200) {
+          toast.success(res.data.message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          localStorage.setItem("token", res.data.token);
+          router.push("/home");
+        }
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 404) {
+            toast.error("User with this email not found");
+          } else if (err.response.status === 401) {
+            toast.error("Invalid email or password");
+          } else {
+            toast.error("An unexpected error occurred");
+          }
+        } else {
+          toast.error("Network error");
+        }
+      }
     },
   });
 
   return (
     <div className="flex overflow-hidden items-start">
+      <ToastContainer />
       <div className="relative h-[100vh] w-7/12 bg-slate-200">
         {/* <Image
           src="/images/login.jpg"

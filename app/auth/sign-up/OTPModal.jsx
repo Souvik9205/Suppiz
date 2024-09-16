@@ -7,10 +7,14 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
 
-const OTPModal = ({ isOpen, onClose, onSuccess, onError }) => {
+const OTPModal = ({ isOpen, onClose, onSuccess, onError, email, pass }) => {
+  const router = useRouter();
   const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const otpForm = useFormik({
     initialValues: {
@@ -18,19 +22,50 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError }) => {
     },
     validationSchema: Yup.object({
       otp: Yup.string()
-        .length(8, "OTP must be exactly 8 digits")
+        .length(6, "OTP must be exactly 6 digits")
         .required("Required"),
     }),
-    onSubmit: (values, { resetForm }) => {
-      if (values.otp === "12345678") {
-        onSuccess("OTP verified successfully!");
-        resetForm();
-        onClose();
-        const router = useRouter();
-        router.push("/home");
-      } else {
-        onError("Invalid OTP. Please try again.");
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        setLoading(true);
+        const payload = {
+          email: email,
+          otp: values.otp,
+          password: pass,
+        };
+        console.log("Payload being sent to backend:", payload);
+        const response = await axios.post(
+          "http://localhost:8080/api/auth/verify-otp",
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          onSuccess("OTP verified successfully!");
+          resetForm();
+          onClose();
+
+          router.push("/auth/data");
+        }
+      } catch (error) {
+        console.error("Error message:", error.message); // Log the error message
+        console.error("Error request:", error.request); // Log the error request (for netwo
+        if (error.response) {
+          onError(
+            error.response?.data?.message || "Invalid OTP. Please try again."
+          );
+        } else if (error.request) {
+          onError("No response from server. Please check your network.");
+        } else {
+          onError("An unknown error occurred.");
+        }
         setValue("");
+      } finally {
+        setLoading(false);
       }
     },
   });
@@ -44,7 +79,7 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError }) => {
         <form onSubmit={otpForm.handleSubmit}>
           <div className="pt-10 pb-8">
             <InputOTP
-              maxLength={8}
+              maxLength={6}
               value={value}
               onChange={(value) => {
                 setValue(value);
@@ -60,13 +95,11 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError }) => {
               <InputOTPGroup>
                 <InputOTPSlot index={2} />
                 <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
               </InputOTPGroup>
               <InputOTPSeparator />
               <InputOTPGroup>
+                <InputOTPSlot index={4} />
                 <InputOTPSlot index={5} />
-                <InputOTPSlot index={6} />
-                <InputOTPSlot index={7} />
               </InputOTPGroup>
             </InputOTP>
           </div>
@@ -86,8 +119,13 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError }) => {
             <button
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded"
+              disabled={loading}
             >
-              Submit OTP
+              {loading ? (
+                <FaSpinner className="animate-spin mr-2" />
+              ) : (
+                "Submit OTP"
+              )}
             </button>
           </div>
         </form>

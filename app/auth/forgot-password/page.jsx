@@ -12,11 +12,12 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 function ForgotPassword() {
   const [step, setStep] = useState(1);
   const [value, setValue] = useState("");
+  const router = useRouter();
 
   const otpForm = useFormik({
     initialValues: {
@@ -53,7 +54,6 @@ function ForgotPassword() {
     }),
     onSubmit: (values) => {
       toast.success("Password changed successfully!");
-      const router = useRouter();
       router.push("/auth/login");
     },
   });

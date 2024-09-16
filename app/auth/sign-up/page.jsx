@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 import { useFormik } from "formik";
 import { Button } from "@/components/ui/button";
 import * as Yup from "yup";
@@ -9,9 +10,11 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OTPModal from "./OTPModal";
+import axios from "axios";
 
 function Auth() {
   const [isChecked, setIsChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isOTPModalOpen, setOTPModalOpen] = useState(false);
   const formik = useFormik({
     initialValues: {
@@ -24,11 +27,61 @@ function Auth() {
         .min(6, "Must be 6 characters or more")
         .required("Required"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (isChecked) {
-        setOTPModalOpen(true);
+        try {
+          setLoading(true);
+          const response = await axios.post(
+            "http://localhost:8080/api/auth/register",
+            {
+              email: values.email,
+              password: values.password,
+            }
+          );
+
+          if (response.status === 200) {
+            toast.success(response.data.message, {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            setLoading(false);
+            setOTPModalOpen(true);
+          }
+        } catch (error) {
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message, {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          } else {
+            toast.error("Something went wrong. Please try again later.", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+        } finally {
+          setLoading(false);
+        }
       } else {
-        toast.error("Please tick the checkbox before logging in.", {
+        toast.error("Please tick the checkbox before registering.", {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -152,8 +205,13 @@ function Auth() {
             <button
               type="submit"
               className="w-full text-white my-2 font-inter font-semibold bg-[#060606] rounded-md p-4 text-center flex items-center justify-center hover:bg-[#333] transition-all duration-300"
+              disabled={loading}
             >
-              Register
+              {loading ? (
+                <FaSpinner className="animate-spin mr-2" />
+              ) : (
+                "Register"
+              )}
             </button>
             <Link href="/auth/login">
               <button
@@ -184,6 +242,8 @@ function Auth() {
           onClose={() => setOTPModalOpen(false)}
           onSuccess={handleOTPSuccess}
           onError={handleOTPError}
+          email={formik.values.email}
+          pass={formik.values.password}
         />
         <div className="w-full flex justify-center items-center max-w-[75vh]">
           <p className="text-sm font-normal text-[#060606] font-inter">
