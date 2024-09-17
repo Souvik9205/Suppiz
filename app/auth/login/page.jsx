@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useSetRecoilState } from "recoil";
+import { userState } from "@/atoms/user";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Auth() {
+  const setUser = useSetRecoilState(userState);
   const router = useRouter();
   const formik = useFormik({
     initialValues: {
@@ -42,6 +45,13 @@ function Auth() {
             theme: "colored",
           });
           localStorage.setItem("token", res.data.token);
+          const userResponse = await axios.get(
+            `http://localhost:8080/api/user/${values.email}`,
+            {
+              headers: { Authorization: `Bearer ${res.data.token}` },
+            }
+          );
+          setUser(userResponse.data);
           router.push("/home");
         }
       } catch (err) {
