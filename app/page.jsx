@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-export default function Home() {
+const Home = () => {
   return (
     <div>
       <h1 className="text-blue-600">Hello world!</h1>
@@ -13,6 +13,22 @@ export default function Home() {
       <button className="p-2 m-5 bg-blue-300 text-lg rounded-md">
         <Link href="/auth/data">Add data</Link>
       </button>
+      <button className="p-2 m-5 bg-blue-300 text-lg rounded-md">
+        <Link href="/home">Home</Link>
+      </button>
+      <button className="p-2 m-5 bg-blue-300 text-lg rounded-md">
+        <Link href="/dashboard">dashboard</Link>
+      </button>
+      <button className="p-2 m-5 bg-blue-300 text-lg rounded-md">
+        <Link href="/test">test</Link>
+      </button>
     </div>
   );
-}
+};
+
+// Set the public flag to true so AuthProvider can skip auth checks
+Home.getInitialProps = () => ({
+  isPublic: true,
+});
+
+export default Home;

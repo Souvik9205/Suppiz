@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
@@ -12,10 +11,18 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@/atoms/user";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
 
 function Auth() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, [setUser]);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -45,13 +52,16 @@ function Auth() {
             theme: "colored",
           });
           localStorage.setItem("token", res.data.token);
+
           const userResponse = await axios.get(
             `http://localhost:8080/api/user/${values.email}`,
             {
               headers: { Authorization: `Bearer ${res.data.token}` },
             }
           );
-          setUser(userResponse.data);
+          const userData = userResponse.data.Data;
+          setUser(userData);
+          // localStorage.setItem("user", JSON.stringify(userData));
           router.push("/home");
         }
       } catch (err) {

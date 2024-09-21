@@ -6,15 +6,24 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaSpinner } from "react-icons/fa";
 import axios from "axios";
+import { useSetRecoilState } from "recoil";
+import { userState } from "@/atoms/user";
 
 const OTPModal = ({ isOpen, onClose, onSuccess, onError, email, pass }) => {
+  const setUser = useSetRecoilState(userState);
   const router = useRouter();
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, [setUser]);
 
   const otpForm = useFormik({
     initialValues: {
@@ -46,6 +55,16 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError, email, pass }) => {
 
         if (response.status === 200) {
           onSuccess("OTP verified successfully!");
+          localStorage.setItem("token", response.data.token);
+
+          const userResponse = await axios.get(
+            `http://localhost:8080/api/user/${email}`,
+            {
+              headers: { Authorization: `Bearer ${response.data.token}` },
+            }
+          );
+          const userData = userResponse.data.Data;
+          setUser(userData);
           resetForm();
           onClose();
 

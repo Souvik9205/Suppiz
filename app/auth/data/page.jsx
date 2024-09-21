@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
+import { useRecoilValue } from "recoil";
+import { userState } from "@/atoms/user";
+import { FaSpinner } from "react-icons/fa";
 import {
   Popover,
   PopoverContent,
@@ -25,8 +28,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import axios from "axios";
 
 const MultiStepForm = () => {
+  const user = useRecoilValue(userState);
+  const [loading, setLoading] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const [step, setStep] = useState(1);
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(null);
@@ -44,14 +56,53 @@ const MultiStepForm = () => {
       country: Yup.string().required("Required"),
       city: Yup.string().required("Required"),
     }),
-    onSubmit: (values) => {
-      //   toast.success(
-      //     `Name: ${values.name}, DOB: ${format(
-      //       new Date(values.dob),
-      //       "PPP"
-      //     )}, Country: ${values.country}, City: ${values.city}`
-      //   );
-      setStep(2);
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+        console.log("log1");
+        console.log("Email:", user.email);
+        console.dir("User:", user);
+        const response = await axios.post(
+          `http://localhost:8080/api/auth/personaldata/${user.email}`,
+          {
+            username: `${values.name}`,
+            dob: `${values.dob}`,
+            country: `${values.country}`,
+            city: `${values.city}`,
+          }
+        );
+        console.log("log2");
+        console.log(response.message);
+        console.log("log3");
+        if (response.status === 200) {
+          toast.success(response.data.message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          setLoading(false);
+          setStep(2);
+        }
+      } catch (error) {
+        console.log("log4");
+        console.log("Error:", error);
+        console.log("Error Response:", error.response);
+
+        if (error.response) {
+          if (error.response.status === 404) {
+            toast.error("User with this email not found");
+          } else {
+            toast.error("An unexpected error occurred");
+          }
+        } else {
+          toast.error("Network error");
+        }
+      }
     },
   });
   const formikStep2 = useFormik({
@@ -65,13 +116,43 @@ const MultiStepForm = () => {
       status: Yup.string().required("Required"),
       experience: Yup.string().required("Required"),
     }),
-    onSubmit: (values) => {
-      toast.success("Form submitted successfully!");
-
-      router.push("/home");
-      //   toast.success(
-      //     `Occupation: ${values.occupation}, status: ${values.status}, Exp: ${values.experience}`
-      //   );
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          `http://localhost:8080/api/auth/carrierdata/${user.email}`,
+          {
+            occupation: `${values.occupation}`,
+            status: `${values.status}`,
+            experience: `${values.experience}`,
+          }
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          setLoading(false);
+        }
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 404) {
+            toast.error("User with this email not found");
+          } else {
+            toast.error("An unexpected error occurred");
+          }
+        } else {
+          toast.error("Network error");
+        }
+      } finally {
+        router.push("/home");
+      }
     },
   });
 
@@ -79,6 +160,10 @@ const MultiStepForm = () => {
     setSelectedDate(date);
     formikStep1.setFieldValue("dob", date);
   };
+
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <div className="flex overflow-hidden items-start">
@@ -206,7 +291,7 @@ const MultiStepForm = () => {
               </div>
 
               <Button type="submit" className="w-full mt-4">
-                Next
+                {loading ? <FaSpinner className="animate-spin mr-2" /> : "Next"}
               </Button>
             </form>
           )}
@@ -315,7 +400,11 @@ const MultiStepForm = () => {
               </div>
 
               <Button type="submit" className="w-full mt-4">
-                Submit
+                {loading ? (
+                  <FaSpinner className="animate-spin mr-2" />
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </form>
           )}

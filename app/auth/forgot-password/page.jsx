@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button";
+import { useRecoilValue } from "recoil";
+import { userState } from "@/atoms/user";
 import Link from "next/link";
 import {
   InputOTP,
@@ -13,11 +15,31 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 function ForgotPassword() {
+  const user = useRecoilValue(userState);
   const [step, setStep] = useState(1);
   const [value, setValue] = useState("");
+  const [hasMounted, setHasMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setHasMounted(true);
+    if (user?.email) {
+      axios
+        .post("http://localhost:8080/api/auth/forgot-password", {
+          email: user.email,
+        })
+        .then((response) => {
+          toast.success("OTP sent to your email!");
+        })
+        .catch((error) => {
+          toast.error("Error sending OTP, please try again later.");
+          console.error("Error sending OTP : ", error);
+        });
+    }
+  }, [user?.email]);
 
   const otpForm = useFormik({
     initialValues: {
@@ -25,15 +47,26 @@ function ForgotPassword() {
     },
     validationSchema: Yup.object({
       otp: Yup.string()
-        .length(8, "OTP must be exactly 8 digits")
+        .length(6, "OTP must be exactly 6 digits")
         .required("Required"),
     }),
-    onSubmit: (values) => {
-      if (values.otp === "12345678") {
-        toast.success("OTP verified successfully!");
-        setStep(2);
-      } else {
-        toast.error("Invalid OTP. Please try again.");
+    onSubmit: async (values) => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/api/auth/verify-pass-otp",
+          {
+            email: user.email,
+            otp: values.otp,
+          }
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          setStep(2);
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        toast.error("Invalid OTP or OTP expired.");
         setValue("");
       }
     },
@@ -52,11 +85,31 @@ function ForgotPassword() {
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Required"),
     }),
-    onSubmit: (values) => {
-      toast.success("Password changed successfully!");
-      router.push("/auth/login");
+    onSubmit: async (values) => {
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/api/auth/reset-password",
+          {
+            email: user.email,
+            newPassword: values.password,
+          }
+        );
+        if (res.status === 200) {
+          toast.success("Password changed successfully!");
+          router.push("/auth/login");
+        } else {
+          toast.error(res.data.message);
+        }
+      } catch (error) {
+        toast.error("Error resetting password.");
+        console.error("Error in reset-password:", error);
+      }
     },
   });
+
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <div className="flex items-start overflow-hidden h-[100vh]">
@@ -91,7 +144,7 @@ function ForgotPassword() {
 
               <div className="pt-10 pb-8">
                 <InputOTP
-                  maxLength={8}
+                  maxLength={6}
                   value={value}
                   onChange={(value) => {
                     setValue(value);
@@ -106,13 +159,11 @@ function ForgotPassword() {
                   <InputOTPGroup>
                     <InputOTPSlot index={2} />
                     <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
                   </InputOTPGroup>
                   <InputOTPSeparator />
                   <InputOTPGroup>
+                    <InputOTPSlot index={4} />
                     <InputOTPSlot index={5} />
-                    <InputOTPSlot index={6} />
-                    <InputOTPSlot index={7} />
                   </InputOTPGroup>
                 </InputOTP>
               </div>
