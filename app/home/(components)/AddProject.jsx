@@ -15,14 +15,13 @@ import { FaSpinner } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const AddProjectButton = () => {
+const AddProjectButton = ({ setNewProjectAdded }) => {
   const user = useRecoilValue(userState);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isOTPForm, setIsOTPForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
-  const [otp, setOtp] = useState("");
 
   const addProject = async () => {
     if (!isFormOpen) {
@@ -39,6 +38,7 @@ const AddProjectButton = () => {
       );
 
       if (response.status === 200) {
+        setNewProjectAdded(true);
         setIsFormOpen(false);
         setIsOTPForm(true);
         toast.success(
