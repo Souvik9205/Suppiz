@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
 import Link from "next/link";
+import KLogoutButton from "./(component)/LogOutButton";
 
 const Home = () => {
   return (
@@ -22,6 +24,8 @@ const Home = () => {
       <button className="p-2 m-5 bg-blue-300 text-lg rounded-md">
         <Link href="/test">test</Link>
       </button>
+
+      <KLogoutButton />
     </div>
   );
 };
