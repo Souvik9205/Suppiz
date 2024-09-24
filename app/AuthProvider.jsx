@@ -12,16 +12,21 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const PublicRoutes = ["/", "/public", "/dashboard", "/help", "/auth/*"];
+  const PublicRoutes = [
+    "/",
+    "/public",
+    "/dashboard",
+    "/help",
+    "/auth/sign-up",
+    "/auth/forgot-password",
+  ];
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (pathname) {
       const isPublicRoute =
-        PublicRoutes.includes(pathname) ||
-        pathname.startsWith("/public") ||
-        pathname.startsWith("/auth");
+        PublicRoutes.includes(pathname) || pathname.startsWith("/public");
 
       if (!token && !isPublicRoute) {
         router.push("/auth/login");

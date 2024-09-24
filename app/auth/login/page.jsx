@@ -11,18 +11,18 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@/atoms/user";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 
 function Auth() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, [setUser]);
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, [setUser]);
   const formik = useFormik({
     initialValues: {
       email: "",

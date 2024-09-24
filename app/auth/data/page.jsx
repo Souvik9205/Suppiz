@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { userState } from "@/atoms/user";
 import { FaSpinner } from "react-icons/fa";
 import {
@@ -31,7 +31,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
 
 const MultiStepForm = () => {
-  const user = useRecoilValue(userState);
+  const [user, setUser] = useRecoilState(userState);
   const [loading, setLoading] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -59,9 +59,6 @@ const MultiStepForm = () => {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        console.log("log1");
-        console.log("Email:", user.email);
-        console.dir("User:", user);
         const response = await axios.post(
           `http://localhost:8080/api/auth/personaldata/${user.email}`,
           {
@@ -71,9 +68,6 @@ const MultiStepForm = () => {
             city: `${values.city}`,
           }
         );
-        console.log("log2");
-        console.log(response.message);
-        console.log("log3");
         if (response.status === 200) {
           toast.success(response.data.message, {
             position: "top-right",
@@ -89,9 +83,7 @@ const MultiStepForm = () => {
           setStep(2);
         }
       } catch (error) {
-        console.log("log4");
-        console.log("Error:", error);
-        console.log("Error Response:", error.response);
+        setLoading(false);
 
         if (error.response) {
           if (error.response.status === 404) {
@@ -141,6 +133,7 @@ const MultiStepForm = () => {
           setLoading(false);
         }
       } catch (err) {
+        setLoading(false);
         if (err.response) {
           if (err.response.status === 404) {
             toast.error("User with this email not found");
@@ -151,6 +144,19 @@ const MultiStepForm = () => {
           toast.error("Network error");
         }
       } finally {
+        const token = localStorage.getItem("token");
+        const userResponse = await axios.get(
+          `http://localhost:8080/api/user/${user.email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const userData = userResponse.data.Data;
+        console.group(userData);
+        console.table(userData);
+        setUser(userData);
         router.push("/home");
       }
     },
@@ -290,7 +296,7 @@ const MultiStepForm = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full mt-4">
+              <Button type="submit" className="w-full mt-4" disable={loading}>
                 {loading ? <FaSpinner className="animate-spin mr-2" /> : "Next"}
               </Button>
             </form>
@@ -399,7 +405,7 @@ const MultiStepForm = () => {
                   )}
               </div>
 
-              <Button type="submit" className="w-full mt-4">
+              <Button type="submit" className="w-full mt-4" disable={loading}>
                 {loading ? (
                   <FaSpinner className="animate-spin mr-2" />
                 ) : (
