@@ -26,9 +26,7 @@ function Page() {
           },
         }
       );
-      console.log("projects: ", response);
       setProjects(response.data.projects);
-      console.log("pr: ", projects);
     } catch (error) {
       console.error("Error fetching projects:", error);
     }
@@ -66,7 +64,7 @@ function Page() {
         <div className="flex w-full justify-center items-center">
           <AddProjectButton setNewProjectAdded={setNewProjectAdded} />
         </div>
-        <div className="bg-slate-200 w-full h-auto m-2 p-5">
+        <div className="bg-slate-200 w-full h-1/3 m-2 p-5">
           <UserProject projects={projects} />
         </div>
       </div>

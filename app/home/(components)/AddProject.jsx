@@ -31,6 +31,7 @@ const AddProjectButton = ({ setNewProjectAdded }) => {
 
     const token = localStorage.getItem("token");
     try {
+      setLoading(true);
       const response = await axios.post(
         `http://localhost:8080/api/project/request/${user.email}`,
         { projectName, description },
@@ -38,8 +39,8 @@ const AddProjectButton = ({ setNewProjectAdded }) => {
       );
 
       if (response.status === 200) {
-        setNewProjectAdded(true);
         setIsFormOpen(false);
+        setLoading(false);
         setIsOTPForm(true);
         toast.success(
           "Project request submitted successfully! Please verify OTP."
@@ -47,6 +48,7 @@ const AddProjectButton = ({ setNewProjectAdded }) => {
       }
     } catch (error) {
       console.error("Error adding project:", error);
+      setLoading(false);
       toast.error("Failed to submit project request. Please try again.");
     }
   };
@@ -78,6 +80,7 @@ const AddProjectButton = ({ setNewProjectAdded }) => {
 
         if (response.status === 201) {
           setIsOTPForm(false);
+          setNewProjectAdded(true);
           toast.success("OTP verified successfully! Project added.");
         }
       } catch (error) {
@@ -123,7 +126,7 @@ const AddProjectButton = ({ setNewProjectAdded }) => {
             onClick={addProject}
             className="bg-blue-500 text-white py-2 px-4 rounded"
           >
-            Submit
+            {loading ? <FaSpinner className="animate-spin mr-2" /> : "Submit"}
           </button>
         </div>
       )}
