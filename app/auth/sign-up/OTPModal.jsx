@@ -14,7 +14,7 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@/atoms/user";
 
 const OTPModal = ({ isOpen, onClose, onSuccess, onError, email, pass }) => {
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
   const [value, setValue] = useState("");

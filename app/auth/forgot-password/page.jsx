@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 function ForgotPassword() {
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
   const user = useRecoilValue(userState);
   const [step, setStep] = useState(1);
   const [value, setValue] = useState("");

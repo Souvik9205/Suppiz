@@ -16,7 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AddProjectButton = ({ setNewProjectAdded }) => {
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
   const user = useRecoilValue(userState);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isOTPForm, setIsOTPForm] = useState(false);

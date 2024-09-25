@@ -13,7 +13,7 @@ import OTPModal from "./OTPModal";
 import axios from "axios";
 
 function Auth() {
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
   const [isChecked, setIsChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isOTPModalOpen, setOTPModalOpen] = useState(false);

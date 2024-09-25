@@ -16,7 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 function Auth() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
 
   // useEffect(() => {
   //   const storedUser = localStorage.getItem("user");

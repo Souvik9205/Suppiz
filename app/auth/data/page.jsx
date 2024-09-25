@@ -31,7 +31,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
 
 const MultiStepForm = () => {
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
   const [user, setUser] = useRecoilState(userState);
   const [loading, setLoading] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);

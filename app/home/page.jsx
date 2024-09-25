@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 
 function Page() {
   const user = useRecoilValue(userState);
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
   const [projects, setProjects] = useState([]);
   const [newProjectAdded, setNewProjectAdded] = useState(false);
 

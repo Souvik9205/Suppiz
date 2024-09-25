@@ -7,7 +7,7 @@ import { useEffect } from "react";
 export const UserProviders = ({ children }) => {
   const setUser = useSetRecoilState(userState);
   const user = useRecoilValue(userState);
-  const backUrl = process.env.BACKEND_URL;
+  const backUrl = "https://suppiz-backend.onrender.com";
 
   useEffect(() => {
     if (!user) {
