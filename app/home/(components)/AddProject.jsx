@@ -16,6 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AddProjectButton = ({ setNewProjectAdded }) => {
+  const backUrl = process.env.BACKEND_URL;
   const user = useRecoilValue(userState);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isOTPForm, setIsOTPForm] = useState(false);
@@ -33,7 +34,7 @@ const AddProjectButton = ({ setNewProjectAdded }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `http://localhost:8080/api/project/request/${user.email}`,
+        `${backUrl}/api/project/request/${user.email}`,
         { projectName, description },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -67,7 +68,7 @@ const AddProjectButton = ({ setNewProjectAdded }) => {
       try {
         setLoading(true);
         const response = await axios.post(
-          `http://localhost:8080/api/project/verify/${user.email}`,
+          `${backUrl}/api/project/verify/${user.email}`,
           {
             projectName,
             description,

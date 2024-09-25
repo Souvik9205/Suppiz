@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 
 function Page() {
   const user = useRecoilValue(userState);
+  const backUrl = process.env.BACKEND_URL;
   const [projects, setProjects] = useState([]);
   const [newProjectAdded, setNewProjectAdded] = useState(false);
 
@@ -19,7 +20,7 @@ function Page() {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/project/all/${user.email}`,
+        `${backUrl}/api/project/all/${user.email}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

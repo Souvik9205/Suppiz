@@ -19,6 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "4.0.0-beta.1",
+    "dotenv": "^16.4.5",
     "formik": "^2.4.6",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.439.0",

@@ -7,6 +7,7 @@ import { useEffect } from "react";
 export const UserProviders = ({ children }) => {
   const setUser = useSetRecoilState(userState);
   const user = useRecoilValue(userState);
+  const backUrl = process.env.BACKEND_URL;
 
   useEffect(() => {
     if (!user) {
@@ -16,7 +17,7 @@ export const UserProviders = ({ children }) => {
         const userToken = token;
 
         axios
-          .get(`http://localhost:8080/api/usertoken/${userToken}`, {
+          .get(`${backUrl}/api/usertoken/${userToken}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

@@ -14,6 +14,7 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@/atoms/user";
 
 const OTPModal = ({ isOpen, onClose, onSuccess, onError, email, pass }) => {
+  const backUrl = process.env.BACKEND_URL;
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
   const [value, setValue] = useState("");
@@ -44,7 +45,7 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError, email, pass }) => {
         };
         console.log("Payload being sent to backend:", payload);
         const response = await axios.post(
-          "http://localhost:8080/api/auth/verify-otp",
+          `${backUrl}/api/auth/verify-otp`,
           payload,
           {
             headers: {
@@ -57,12 +58,9 @@ const OTPModal = ({ isOpen, onClose, onSuccess, onError, email, pass }) => {
           onSuccess("OTP verified successfully!");
           localStorage.setItem("token", response.data.token);
 
-          const userResponse = await axios.get(
-            `http://localhost:8080/api/user/${email}`,
-            {
-              headers: { Authorization: `Bearer ${response.data.token}` },
-            }
-          );
+          const userResponse = await axios.get(`${backUrl}/api/user/${email}`, {
+            headers: { Authorization: `Bearer ${response.data.token}` },
+          });
           const userData = userResponse.data.Data;
           setUser(userData);
           resetForm();

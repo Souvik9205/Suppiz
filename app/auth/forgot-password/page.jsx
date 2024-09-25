@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 function ForgotPassword() {
+  const backUrl = process.env.BACKEND_URL;
   const user = useRecoilValue(userState);
   const [step, setStep] = useState(1);
   const [value, setValue] = useState("");
@@ -28,7 +29,7 @@ function ForgotPassword() {
     setHasMounted(true);
     if (user?.email) {
       axios
-        .post("http://localhost:8080/api/auth/forgot-password", {
+        .post(`${backUrl}/api/auth/forgot-password`, {
           email: user.email,
         })
         .then((response) => {
@@ -53,7 +54,7 @@ function ForgotPassword() {
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          "http://localhost:8080/api/auth/verify-pass-otp",
+          `${backUrl}/api/auth/verify-pass-otp`,
           {
             email: user.email,
             otp: values.otp,
@@ -87,13 +88,10 @@ function ForgotPassword() {
     }),
     onSubmit: async (values) => {
       try {
-        const res = await axios.post(
-          "http://localhost:8080/api/auth/reset-password",
-          {
-            email: user.email,
-            newPassword: values.password,
-          }
-        );
+        const res = await axios.post(`${backUrl}/api/auth/reset-password`, {
+          email: user.email,
+          newPassword: values.password,
+        });
         if (res.status === 200) {
           toast.success("Password changed successfully!");
           router.push("/auth/login");

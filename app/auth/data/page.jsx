@@ -31,6 +31,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
 
 const MultiStepForm = () => {
+  const backUrl = process.env.BACKEND_URL;
   const [user, setUser] = useRecoilState(userState);
   const [loading, setLoading] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -60,7 +61,7 @@ const MultiStepForm = () => {
       try {
         setLoading(true);
         const response = await axios.post(
-          `http://localhost:8080/api/auth/personaldata/${user.email}`,
+          `${backUrl}/api/auth/personaldata/${user.email}`,
           {
             username: `${values.name}`,
             dob: `${values.dob}`,
@@ -112,7 +113,7 @@ const MultiStepForm = () => {
       try {
         setLoading(true);
         const response = await axios.post(
-          `http://localhost:8080/api/auth/carrierdata/${user.email}`,
+          `${backUrl}/api/auth/carrierdata/${user.email}`,
           {
             occupation: `${values.occupation}`,
             status: `${values.status}`,
@@ -146,7 +147,7 @@ const MultiStepForm = () => {
       } finally {
         const token = localStorage.getItem("token");
         const userResponse = await axios.get(
-          `http://localhost:8080/api/user/${user.email}`,
+          `${backUrl}/api/user/${user.email}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

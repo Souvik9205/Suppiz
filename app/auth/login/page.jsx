@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 function Auth() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
+  const backUrl = process.env.BACKEND_URL;
 
   // useEffect(() => {
   //   const storedUser = localStorage.getItem("user");
@@ -36,7 +37,7 @@ function Auth() {
     }),
     onSubmit: async (values) => {
       try {
-        const res = await axios.post("http://localhost:8080/api/auth/login", {
+        const res = await axios.post(`${backUrl}/api/auth/login`, {
           email: values.email,
           password: values.password,
         });
@@ -54,7 +55,7 @@ function Auth() {
           localStorage.setItem("token", res.data.token);
 
           const userResponse = await axios.get(
-            `http://localhost:8080/api/user/${values.email}`,
+            `${backUrl}/api/user/${values.email}`,
             {
               headers: { Authorization: `Bearer ${res.data.token}` },
             }
