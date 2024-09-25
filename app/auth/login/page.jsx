@@ -186,7 +186,7 @@ function Auth() {
 
         <div className="w-full flex justify-center items-center max-w-[75vh]">
           <p className="text-sm font-normal text-[#060606] font-inter">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <span className="font-semibold underline underline-offset-2 hover:text-gray-700">
               <Link href="/auth/sign-up">Sign up here!</Link>
             </span>

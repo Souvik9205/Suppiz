@@ -139,7 +139,7 @@ function ForgotPassword() {
                 Enter OTP
               </h3>
               <p className="text-base mb-2 text-neutral-600 font-inter">
-                We've sent an 8-digit OTP to your email.
+                We have sent an 8-digit OTP to your email.
               </p>
 
               <div className="pt-10 pb-8">

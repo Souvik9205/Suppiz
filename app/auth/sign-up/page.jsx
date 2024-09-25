@@ -148,7 +148,7 @@ function Auth() {
               Sign Up
             </h3>
             <p className="text-base mb-2 font-inter text-neutral-600">
-              Hi, let's get into the world of suppiz!
+              Hi, lets get into the world of suppiz!
             </p>
           </div>
 
